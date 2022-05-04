@@ -29,19 +29,23 @@ async function handleElrond(context: AppContext): Promise<void> {
   try {
     const res = await httpGet(url);
     if (res.status === 200) {
-      const resObj = JSON.parse(JSON.stringify(res.data));
-      for (const tx of resObj) {
+      const txArray = JSON.parse(JSON.stringify(res.data));
+      for (const tx of txArray) {
         if (tx.hasOwnProperty("function")
           && tx["function"].startsWith("placeOrder")
           && tx.hasOwnProperty("logs") 
           && tx["logs"].hasOwnProperty("events")) {
           for (const event of tx.logs.events) {
-            if (event.hasOwnProperty("identifier") && event.identifier.startsWith("placeOrder")) {
+            if (event.hasOwnProperty("identifier") && event["identifier"].startsWith("placeOrder")) {
               const eventObj = parseStorageEvent(event.data);
               if (eventObj.node === ELROND_ACCOUNT) {
+                logger.info(`Add new Elrond task:`);
+                Object.entries(eventObj).forEach(([key, val]) => logger.info(`    ${key}:${val}`));
                 dbOps.addRecord(
                   eventObj.cid,
                   parseInt(eventObj.size.toString()),
+                  eventObj.token,
+                  eventObj.price.toString(),
                   tx.timestamp,
                   "elrond",
                   tx.txHash,

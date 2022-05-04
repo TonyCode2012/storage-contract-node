@@ -21,6 +21,8 @@ export interface DbOperator {
   addRecord: (
     cid: string,
     size: number,
+    token: string,
+    price: string,
     blockNumber: number,
     chainType: string,
     txHash: string,

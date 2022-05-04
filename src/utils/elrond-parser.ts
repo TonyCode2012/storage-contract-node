@@ -7,9 +7,6 @@ const paramSpec = {
   caller: { start: 0, end: 32 },
   node: { start: 32, end: 64 },
   cid: { start: 68, end: 114 },
-  token: { start: 114, end: 128 },
-  price: { start: 128, end: 138 },
-  size: { start: 138, end: 146 }
 };
 
 export default function parseStorageEvent(base64String: string): StorageEvent {
@@ -37,19 +34,18 @@ export default function parseStorageEvent(base64String: string): StorageEvent {
   return res;
 }
 
-function findPriceAndSize(buf: Buffer, pos: number) {
+const findPriceAndSize = (buf: Buffer, pos: number) => {
   const sizeStartIndex = buf.length - 8;
   const priceStartIndex = pos + 4;
   const size = bigNumberFromBuffer(buf.subarray(sizeStartIndex)); 
   const price = bigNumberFromBuffer(buf.subarray(priceStartIndex, sizeStartIndex));
-  console.log(`price:${buf.subarray(priceStartIndex, sizeStartIndex).toString('hex')}`)
   return {
     price: price,
     size: size
   }
 }
 
-function findTokenIdentifier(buf: Buffer, pos: number) {
+const findTokenIdentifier = (buf: Buffer, pos: number) => {
   let zeroNum = 0;
   let start = pos;
   let end = pos;
@@ -72,7 +68,7 @@ function findTokenIdentifier(buf: Buffer, pos: number) {
   }
 }
 
-function bigNumberFromBuffer(buf: Buffer): BigNumber {
+const bigNumberFromBuffer = (buf: Buffer): BigNumber => {
   try {
     const hex = buf.toString('hex').trim();
     return new BigNumber(hex, 16);
@@ -82,7 +78,7 @@ function bigNumberFromBuffer(buf: Buffer): BigNumber {
   return new BigNumber(0);
 }
 
-function stringFromBuffer(buf: Buffer): string {
+const stringFromBuffer = (buf: Buffer): string => {
   try {
     //const decoded = Buffer.from(String(part), 'hex').toString('utf8').trim();
     const decoded = buf.toString('utf8').trim();
@@ -98,7 +94,7 @@ function stringFromBuffer(buf: Buffer): string {
   return "";
 }
 
-function bech32AddressFromBuffer(buf: Buffer): string {
+const bech32AddressFromBuffer = (buf: Buffer): string => {
   try {
     const bech32Encoded = bech32Encode(buf);
     if (addressIsBech32(bech32Encoded)) {
@@ -110,7 +106,7 @@ function bech32AddressFromBuffer(buf: Buffer): string {
   return "";
 }
 
-function addressIsBech32(destinationAddress = '') {
+const addressIsBech32 = (destinationAddress = '') => {
   const isValidBach = !(
     !destinationAddress ||
     !destinationAddress.startsWith('erd') ||
@@ -120,18 +116,18 @@ function addressIsBech32(destinationAddress = '') {
   return isValidBach;
 }
 
-function bech32Encode(buf: Buffer) {
+const bech32Encode = (buf: Buffer) => {
   //const words = bech32.toWords(Buffer.from(publicKey, 'hex'));
   const words = bech32.toWords(buf);
   return bech32.encode('erd', words);
 };
 
-function bech32Decode(address: any) {
+const bech32Decode = (address: any) => {
   const decoded = bech32.decode(address, 256);
   return Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
 };
 
-function isUtf8(str: string) {
+const isUtf8 = (str: string) => {
   for (let i = 0; i < str.length; i++) {
     if (str.charCodeAt(i) > 127) return false;
   }

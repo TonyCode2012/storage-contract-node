@@ -13,6 +13,8 @@ export function createRecordOperator(db: Database): DbOperator {
   const addRecord = async (
     cid: string,
     size: number,
+    token: string,
+    price: string,
     blockNumber: number,
     chainType: string,
     txHash: string,
@@ -21,11 +23,13 @@ export function createRecordOperator(db: Database): DbOperator {
     try {
       await db.run(
         'insert into record ' +
-          '(`cid`, `size`, `blockNumber`, `chainType`, `txHash`, `timestamp`, `tryout`, `status`)' +
-          ' values (?, ?, ?, ?, ?, ?, ?, ?)',
+          '(`cid`, `size`, `token`, `price`, `blockNumber`, `chainType`, `txHash`, `timestamp`, `tryout`, `status`)' +
+          ' values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           cid,
           size,
+          token,
+          price,
           blockNumber,
           chainType,
           txHash,

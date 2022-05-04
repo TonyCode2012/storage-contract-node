@@ -18,6 +18,14 @@ export async function createRecordTable(sequelize: QueryInterface) {
           type: DataTypes.INTEGER,
           allowNull: false,
         },
+        token: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        price: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
         blockNumber: {
           type: DataTypes.INTEGER,
           allowNull: false,

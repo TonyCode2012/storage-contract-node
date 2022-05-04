@@ -7,11 +7,11 @@ import { AppContext } from '../types/context';
 import { Task } from '../types/tasks';
 import { createRecordOperator } from '../db/operator';
 import { 
-  STORAGE_ORDER_ADDR,
+  ETH_STORAGE_CONTRACT_ADDRESS,
   STORAGE_ORDER_ABI,
   ETH_ACCOUNT,
   CRUST_CHAIN_URL,
-  MONITOR_CHAIN_URL } from '../consts';
+  ETH_ENDPOINT_URL } from '../consts';
 
 export async function createMonitorETHTask(context: AppContext): Promise<Task> {
   return {
@@ -19,7 +19,7 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
     start: async (context: AppContext) => {
       // If you don't specify a //url//, Ethers connects to the default 
       // (i.e. ``http:/\/localhost:8545``)
-      if (MONITOR_CHAIN_URL === '') {
+      if (ETH_ENDPOINT_URL === '') {
         logger.error("Monitor chain address cannot be null!");
         process.exit(1);
       }
@@ -30,16 +30,16 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
       }
 
       logger.info("Start monitor service:");
-      logger.info(`  Monitor chain address:${MONITOR_CHAIN_URL}`);
+      logger.info(`  Monitor chain address:${ETH_ENDPOINT_URL}`);
       logger.info(`  Crust chain address:${CRUST_CHAIN_URL}`);
       logger.info(`  Current node address:${ETH_ACCOUNT}`);
-      const provider = new ethers.providers.JsonRpcProvider(MONITOR_CHAIN_URL);
+      const provider = new ethers.providers.JsonRpcProvider(ETH_ENDPOINT_URL);
 
       // The provider also allows signing transactions to
       // send ether and pay to change state within the blockchain.
       // For this, we need the account signer...
       const signer = provider.getSigner();
-      const StorageOrderContract = new ethers.Contract(STORAGE_ORDER_ADDR, STORAGE_ORDER_ABI, provider);
+      const StorageOrderContract = new ethers.Contract(ETH_STORAGE_CONTRACT_ADDRESS, STORAGE_ORDER_ABI, provider);
       const db = context.database;
       const dbOps = createRecordOperator(db);
 
@@ -51,15 +51,17 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
         nodeAddress: string,
         event
       ) => {
-        logger.info("New order request:");
-        logger.info(`  cid:${cid}`);
-        logger.info(`  size:${size}`);
-        logger.info(`  price:${price}`);
-        logger.info(`  nodeAddress :${nodeAddress}`);
         if (ETH_ACCOUNT === nodeAddress) {
+          logger.info("ADD new ETH task:");
+          logger.info(`  cid:${cid}`);
+          logger.info(`  size:${size}`);
+          logger.info(`  price:${price}`);
+          logger.info(`  nodeAddress :${nodeAddress}`);
           dbOps.addRecord(
             cid,
             size,
+            "ETH",
+            price.toString(),
             event.blockNumber,
             "eth",
             event.transactionHash,
@@ -77,16 +79,18 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
         nodeAddress:string,
         event
       ) => {
-        logger.info("New order request:");
-        logger.info(`  cid:${cid}`);
-        logger.info(`  size:${size}`);
-        logger.info(`  price:${price}`);
-        logger.info(`  tokenAddress:${tokenAddress}`);
-        logger.info(`  nodeAddress :${nodeAddress}`);
         if (ETH_ACCOUNT === nodeAddress) {
+          logger.info("Add new ETH task:");
+          logger.info(`  cid:${cid}`);
+          logger.info(`  size:${size}`);
+          logger.info(`  price:${price}`);
+          logger.info(`  tokenAddress:${tokenAddress}`);
+          logger.info(`  nodeAddress :${nodeAddress}`);
           dbOps.addRecord(
             cid,
             size,
+            tokenAddress,
+            price.toString(),
             event.blockNumber,
             "eth",
             event.transactionHash,
