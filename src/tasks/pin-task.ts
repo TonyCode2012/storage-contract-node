@@ -10,7 +10,7 @@ async function handlePin(context: AppContext): Promise<void> {
   for (const record of records) {
     try {
       logger.info(`Pin file cid:${record.cid}, size:${record.size}`);
-      //await context.ipfsApi.pinAdd(record.cid)
+      await context.ipfsApi.pinAdd(record.cid)
       await dbOps.updateStatus(record.id, 'pinned');
     } catch(e) {
       await dbOps.increaseTryout(record.id);

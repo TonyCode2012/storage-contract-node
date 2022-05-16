@@ -29,7 +29,7 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
         process.exit(1);
       }
 
-      logger.info("Start monitor service:");
+      logger.info('Start "monitor-eth" service:');
       logger.info(`  Monitor chain address:${ETH_ENDPOINT_URL}`);
       logger.info(`  Crust chain address:${CRUST_CHAIN_URL}`);
       logger.info(`  Current node address:${ETH_ACCOUNT}`);
@@ -99,7 +99,7 @@ export async function createMonitorETHTask(context: AppContext): Promise<Task> {
         }
       });
 
-      logger.info('Start service successfully.');
+      logger.info('task "monitor-eth" started');
     },
     stop: async () => {
       return true;

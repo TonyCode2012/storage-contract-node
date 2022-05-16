@@ -12,6 +12,7 @@ export const ELROND_ACCOUNT = process.env.ELROND_ACCOUNT as string;
 export const ETH_ENDPOINT_URL = process.env.ETH_ENDPOINT_URL as string;
 export const ETH_STORAGE_CONTRACT_ADDRESS = process.env.ETH_STORAGE_CONTRACT_ADDRESS as string;
 export const DB_PATH = process.env.DB_PATH as string;
+export const API_PORT = parseInt(process.env.API_PORT as string);
 export const TRYOUT = 10;
 export const STORAGE_ORDER_ABI = [
   "event Order(string cid, uint size, uint price, address nodeAddress)",
